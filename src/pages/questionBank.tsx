@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
-import questionBank from '../questionBank.json';
+import React, { useMemo, useState } from 'react';
 
-type QuestionType = {
+export type QuestionType = {
 	id: number;
 	name: string;
 };
-type CaterotyType = {
+export type CategoryType = {
 	title: string;
 	questions: QuestionType[];
 };
 
-const QuestionBank = () => {
-	const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
-	const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-	const [interviewQuestion, setInterviewQuestion] = useState<string>('');
-
+const QuestionBank = ({
+	questionBank,
+	selectedQuestions,
+	setSelectedQuestions,
+}: {
+	questionBank: Record<string, CategoryType>;
+	selectedQuestions: string[];
+	setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
+	selectedCategories: string[];
+	setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
+	handleCategoryCheckboxChange: (
+		e: React.ChangeEvent<HTMLInputElement>,
+		questionsCategory: QuestionType[],
+		selectedTitle: string
+	) => void;
+}) => {
 	const {
 		twoPointers,
 		fastSlowPointers,
@@ -43,61 +53,13 @@ const QuestionBank = () => {
 		}
 	};
 
-	const handleCategoryCheckboxChange = (
-		e: React.ChangeEvent<HTMLInputElement>,
-		questionsCategory: QuestionType[],
-		selectedTitle: string
-	) => {
-		//getting an array of ALL questions in the category
-		const totalCategoryQuestions = questionsCategory.map(
-			(question) => question.name
-		);
-		// getting an array of all questions NOT YET added
-		const questionsNotAdded = totalCategoryQuestions.filter(
-			(question) => !selectedQuestions.includes(question)
-		);
-
-		if (e.target.checked) {
-			setSelectedCategory((prev) => [...prev, selectedTitle]);
-			setSelectedQuestions((prev) => [...prev, ...questionsNotAdded]);
-		} else {
-			setSelectedCategory(
-				selectedCategory.filter((title) => !title.includes(selectedTitle))
-			);
-			setSelectedQuestions(
-				selectedQuestions.filter(
-					(questions) => !totalCategoryQuestions.includes(questions)
-				)
-			);
-		}
-	};
-
-	// choose random question from selectedQuestions
-	const selectRandomQuestion = () => {
-		const randomNum = Math.floor(Math.random() * selectedQuestions.length);
-		const randomQuestion = selectedQuestions[randomNum];
-		setInterviewQuestion(randomQuestion);
-	};
-
-	const QuestionCounter = () => {
-		return <h2>{selectedQuestions.length}</h2>;
-	};
-
-	const renderQuestions = (category: CaterotyType) => {
+	const renderQuestions = (category: CategoryType) => {
 		const { title, questions } = category;
 
 		return (
 			<div>
 				<h2 style={{ fontSize: '1.5rem', borderBottom: '1px solid red' }}>
-					<input
-						type='checkbox'
-						value={title}
-						checked={selectedCategory.includes(title)}
-						onChange={(e) => {
-							handleCategoryCheckboxChange(e, questions, title);
-						}}
-					/>
-					<label> {title}</label>
+					{title}
 				</h2>
 				{Object.values(questions).map(({ id, name }) => (
 					<div key={id}>
@@ -117,19 +79,13 @@ const QuestionBank = () => {
 	};
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-			<QuestionCounter />
-			{interviewQuestion && <h2>{interviewQuestion}</h2>}
-			<button onClick={selectRandomQuestion}>Select Random Question</button>
-			<button
-				onClick={() => {
-					setInterviewQuestion('');
-					setSelectedCategory([]);
-					setSelectedQuestions([]);
-				}}
-			>
-				Reset
-			</button>
+		<div
+			style={{
+				display: 'grid',
+				gridTemplateColumns: '1fr 1fr 1fr',
+				gap: '2rem',
+			}}
+		>
 			{renderQuestions(twoPointers)}
 			{renderQuestions(fastSlowPointers)}
 			{renderQuestions(slidingWindow)}
