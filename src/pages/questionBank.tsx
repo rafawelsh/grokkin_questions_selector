@@ -10,7 +10,7 @@ type CaterotyType = {
 	questions: QuestionType[];
 };
 
-export const QuestionBank = () => {
+const QuestionBank = () => {
 	const [selectedQuestions, setSelectedQuestions] = useState<string[]>([]);
 	const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
 	const [interviewQuestion, setInterviewQuestion] = useState<string>('');
@@ -149,3 +149,5 @@ export const QuestionBank = () => {
 		</div>
 	);
 };
+
+export default QuestionBank;
