@@ -23,7 +23,7 @@ export const CategoryButtons = ({
 							id={title}
 							value={title}
 							checked={selectedCategories.includes(title)}
-							onClick={(e) => {
+							onChange={(e) => {
 								handleCategoryCheckboxChange(e, questions, title);
 							}}
 						/>
