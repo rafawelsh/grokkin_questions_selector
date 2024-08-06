@@ -1,13 +1,5 @@
-import React, { useMemo, useState } from 'react';
-
-export type QuestionType = {
-	id: number;
-	name: string;
-};
-export type CategoryType = {
-	title: string;
-	questions: QuestionType[];
-};
+import React from 'react';
+import { CategoryType, QuestionType } from '../index';
 
 const QuestionBank = ({
 	questionBank,

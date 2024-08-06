@@ -2,10 +2,19 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
-import QuestionBank, { QuestionType } from './questionBank';
+import QuestionBank from './components/questionBank';
 import questionBank from '../questionBank.json';
-import CategoryButtons from './CategoryButtons';
+import CategoryButtons from './components/CategoryButtons';
 import { useState } from 'react';
+
+export type QuestionType = {
+	id: number;
+	name: string;
+};
+export type CategoryType = {
+	title: string;
+	questions: QuestionType[];
+};
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,9 +28,6 @@ export default function Home() {
 		questionsCategory: QuestionType[],
 		selectedTitle: string
 	) => {
-		console.log(e.target.value);
-		console.log(questionsCategory);
-		console.log(selectedTitle);
 		//getting an array of ALL questions in the category
 		const totalCategoryQuestions = questionsCategory.map(
 			(question) => question.name

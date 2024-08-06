@@ -1,4 +1,4 @@
-import { CategoryType, QuestionType } from './questionBank';
+import { CategoryType, QuestionType } from '../index';
 
 export const CategoryButtons = ({
 	questionBank,
