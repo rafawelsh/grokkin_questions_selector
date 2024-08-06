@@ -109,7 +109,7 @@ export const QuestionBank = () => {
 							checked={selectedQuestions.includes(name)}
 							onChange={(e) => handleCheckboxChange(e)}
 						/>
-						<label for={name}>{name}</label>
+						<label htmlFor={name}>{name}</label>
 					</div>
 				))}
 			</div>
