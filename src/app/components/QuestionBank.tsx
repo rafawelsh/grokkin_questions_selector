@@ -1,18 +1,21 @@
 import React from 'react';
-import { CategoryType, QuestionType } from '../index';
+import { CategoryType, QuestionType } from '../page';
+import { questionsNotAdded } from '@/utils/selectedQuestionsHelpers';
 
 const QuestionBank = ({
 	questionBank,
 	selectedQuestions,
-	setSelectedQuestions,
+	selectedCategories,
+	handleQuestionCheckboxChange,
+	handleSelectAllQuestionsInCategory,
 }: {
 	questionBank: Record<string, CategoryType>;
 	selectedQuestions: string[];
-	setSelectedQuestions: React.Dispatch<React.SetStateAction<string[]>>;
 	selectedCategories: string[];
-	setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
-	handleCategoryCheckboxChange: (
-		e: React.ChangeEvent<HTMLInputElement>,
+	handleQuestionCheckboxChange: (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => void;
+	handleSelectAllQuestionsInCategory: (
 		questionsCategory: QuestionType[],
 		selectedTitle: string
 	) => void;
@@ -36,36 +39,51 @@ const QuestionBank = ({
 		modifiedBinarySearch,
 	} = questionBank;
 
-	const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const checkedId = e.target.value;
-		if (e.target.checked) {
-			setSelectedQuestions((prev) => [...prev, checkedId]);
-		} else {
-			setSelectedQuestions(selectedQuestions.filter((id) => id !== checkedId));
-		}
-	};
-
 	const renderQuestions = (category: CategoryType) => {
 		const { title, questions } = category;
+		const checkedQuestions = questionsNotAdded(questions, selectedQuestions);
 
 		return (
-			<div>
-				<h2 style={{ fontSize: '1.5rem', borderBottom: '1px solid red' }}>
-					{title}
+			<div
+				style={{
+					display: `${selectedCategories.includes(title) ? 'block' : 'none'}`,
+				}}
+			>
+				<h2
+					style={{
+						fontSize: '1.5rem',
+						borderBottom: '1px solid red',
+					}}
+				>
+					<input
+						type='checkbox'
+						id={title}
+						name='interest'
+						value={title}
+						checked={checkedQuestions.length === 0}
+						onChange={() =>
+							handleSelectAllQuestionsInCategory(questions, title)
+						}
+					/>
+					<label htmlFor={title}>{title}</label>
 				</h2>
-				{Object.values(questions).map(({ id, name }) => (
-					<div key={id}>
-						<input
-							type='checkbox'
-							id={name}
-							name='interest'
-							value={name}
-							checked={selectedQuestions.includes(name)}
-							onChange={(e) => handleCheckboxChange(e)}
-						/>
-						<label htmlFor={name}>{name}</label>
-					</div>
-				))}
+				<div
+					style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+				>
+					{Object.values(questions).map(({ id, name }: QuestionType) => (
+						<div key={id}>
+							<input
+								type='checkbox'
+								id={name}
+								name='interest'
+								value={name}
+								checked={selectedQuestions.includes(name)}
+								onChange={(e) => handleQuestionCheckboxChange(e)}
+							/>
+							<label htmlFor={name}>{name}</label>
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	};

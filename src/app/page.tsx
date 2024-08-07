@@ -4,6 +4,7 @@ import CategoryButtons from './components/CategoryButtons';
 import QuestionBank from './components/QuestionBank';
 import { useState } from 'react';
 import styles from '@/styles/Home.module.css';
+import { questionsNotAdded } from '@/utils/selectedQuestionsHelpers';
 
 export type QuestionType = {
 	id: number;
@@ -19,8 +20,37 @@ export default function Page() {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [interviewQuestion, setInterviewQuestion] = useState<string>('');
 
+	const handleQuestionCheckboxChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		if (e.target.checked) {
+			setSelectedQuestions((prev) => [...prev, e.target.value]);
+		} else {
+			setSelectedQuestions(
+				selectedQuestions.filter((prev) => !prev.includes(e.target.value))
+			);
+		}
+	};
+
+	const handleSelectAllQuestionsInCategory = (
+		questionsCategory: QuestionType[]
+	) => {
+		const questionsNotChecked: string[] = questionsNotAdded(
+			questionsCategory,
+			selectedQuestions
+		);
+
+		if (questionsNotChecked.length > 0) {
+			setSelectedQuestions((prev) => [...prev, ...questionsNotChecked]);
+		} else {
+			setSelectedQuestions((prev) =>
+				prev.filter((questions) => !questionsNotChecked.includes(questions))
+			);
+		}
+	};
+
 	const handleCategoryCheckboxChange = (
-		e: React.ChangeEvent<HTMLInputElement>,
+		e: React.MouseEvent<HTMLInputElement, MouseEvent>,
 		questionsCategory: QuestionType[],
 		selectedTitle: string
 	) => {
@@ -32,8 +62,7 @@ export default function Page() {
 		const questionsNotAdded = totalCategoryQuestions.filter(
 			(question) => !selectedQuestions.includes(question)
 		);
-
-		if (e.target.checked) {
+		if (!selectedCategories.includes(selectedTitle)) {
 			setSelectedCategories((prev) => [...prev, selectedTitle]);
 			setSelectedQuestions((prev) => [...prev, ...questionsNotAdded]);
 		} else {
@@ -58,7 +87,10 @@ export default function Page() {
 	};
 
 	return (
-		<main className={`${styles.main}`}>
+		<main
+			className={`${styles.main}`}
+			style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}
+		>
 			<div
 				style={{
 					display: 'flex',
@@ -99,10 +131,11 @@ export default function Page() {
 				<QuestionBank
 					questionBank={grokkinQuestionBank}
 					selectedQuestions={selectedQuestions}
-					setSelectedQuestions={setSelectedQuestions}
 					selectedCategories={selectedCategories}
-					setSelectedCategories={setSelectedCategories}
-					handleCategoryCheckboxChange={handleCategoryCheckboxChange}
+					handleSelectAllQuestionsInCategory={
+						handleSelectAllQuestionsInCategory
+					}
+					handleQuestionCheckboxChange={handleQuestionCheckboxChange}
 				/>
 			</div>
 		</main>
